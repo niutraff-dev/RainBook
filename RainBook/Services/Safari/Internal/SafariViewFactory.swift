@@ -1,8 +1,8 @@
 import WebKit
 
-enum WebViewFactory {
+enum SafariViewFactory {
 
-    static func makeWebView(
+    static func makeSafariView(
         frame: CGRect,
         configuration: SafariConfiguration,
         dataStore: WKWebsiteDataStore
@@ -19,19 +19,19 @@ enum WebViewFactory {
             wkConfig.userContentController.addUserScript(script)
         }
 
-        let webView = WKWebView(frame: frame, configuration: wkConfig)
-        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let safariView = WKWebView(frame: frame, configuration: wkConfig)
+        safariView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         if let userAgent = configuration.customUserAgent {
-            webView.customUserAgent = userAgent
+            safariView.customUserAgent = userAgent
         }
 
         if configuration.isBackgroundTransparent {
-            webView.isOpaque = false
-            webView.backgroundColor = .clear
-            webView.scrollView.backgroundColor = .clear
+            safariView.isOpaque = false
+            safariView.backgroundColor = .clear
+            safariView.scrollView.backgroundColor = .clear
         }
 
-        return webView
+        return safariView
     }
 }

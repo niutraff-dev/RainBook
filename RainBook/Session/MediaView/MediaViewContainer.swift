@@ -1,24 +1,24 @@
 import SwiftUI
 
-struct WebViewContainer: View {
+struct MediaViewContainer: View {
 
-    @StateObject private var viewModel: WebViewModel
+    @StateObject private var viewModel: MediaViewModel
 
     init(url: URL) {
-        self._viewModel = StateObject(wrappedValue: WebViewModel(url: url))
+        self._viewModel = StateObject(wrappedValue: MediaViewModel(url: url))
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            WebView(
+            MediaView(
                 url: viewModel.url,
                 isLoading: $viewModel.isLoading,
-                onWebViewCreated: { webView in
-                    viewModel.setWebView(webView)
+                onMediaViewCreated: { view in
+                    viewModel.setMediaView(view)
                 }
             )
             
-            webToolbar
+            mediaToolbar
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.palette(.backColor))
@@ -34,7 +34,7 @@ struct WebViewContainer: View {
     }
     
     @ViewBuilder
-    private var webToolbar: some View {
+    private var mediaToolbar: some View {
         HStack(spacing: 0) {
             Button {
                 viewModel.goBack()
@@ -80,5 +80,5 @@ struct WebViewContainer: View {
 }
 
 #Preview {
-    WebViewContainer(url: URL(string: "https://apple.com")!)
+    MediaViewContainer(url: URL(string: "https://apple.com")!)
 }

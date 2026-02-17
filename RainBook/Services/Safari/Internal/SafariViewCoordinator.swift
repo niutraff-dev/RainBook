@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-final class WebViewCoordinator: NSObject {
+final class SafariViewCoordinator: NSObject {
 
     private let store: SafariWebStore
     private let configuration: SafariConfiguration
@@ -19,7 +19,7 @@ final class WebViewCoordinator: NSObject {
     }
 }
 
-extension WebViewCoordinator: WKNavigationDelegate {
+extension SafariViewCoordinator: WKNavigationDelegate {
 
     func webView(
         _ webView: WKWebView,
@@ -88,7 +88,7 @@ extension WebViewCoordinator: WKNavigationDelegate {
                 decisionHandler(.cancel)
 
             case .openInExternalWebView:
-                self.store.openInExternalWebView(url)
+                self.store.openInExternalSafariView(url)
                 decisionHandler(.cancel)
 
             case .openInSafari:
@@ -113,7 +113,7 @@ extension WebViewCoordinator: WKNavigationDelegate {
     }
 }
 
-extension WebViewCoordinator: WKUIDelegate {
+extension SafariViewCoordinator: WKUIDelegate {
 
     func webView(
         _ webView: WKWebView,
@@ -152,7 +152,7 @@ extension WebViewCoordinator: WKUIDelegate {
                 }
 
             case .openInExternalWebView:
-                self.store.openInExternalWebView(url)
+                self.store.openInExternalSafariView(url)
 
             case .openInSystemBrowser:
                 await UIApplication.shared.open(url)
@@ -166,7 +166,7 @@ extension WebViewCoordinator: WKUIDelegate {
     }
 }
 
-extension WebViewCoordinator: UIScrollViewDelegate {
+extension SafariViewCoordinator: UIScrollViewDelegate {
 
     func scrollViewWillBeginZooming(
         _ scrollView: UIScrollView,

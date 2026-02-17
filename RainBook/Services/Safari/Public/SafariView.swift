@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct SafariWebView: View {
+public struct SafariView: View {
 
     private let url: URL
     private let configuration: SafariConfiguration
@@ -53,7 +53,7 @@ public struct SafariWebView: View {
     public var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                WebViewRepresentable(
+                SafariViewRepresentable(
                     url: url,
                     store: store,
                     configuration: configuration,

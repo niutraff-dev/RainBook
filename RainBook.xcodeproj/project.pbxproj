@@ -6,9 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		DE80E3562EFEB0D800B24701 /* RainBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RainBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -82,7 +79,7 @@
 			name = RainBook;
 			packageProductDependencies = (
 			);
-			productName = CriciumaBefair;
+			productName = RainBook;
 			productReference = DE80E3562EFEB0D800B24701 /* RainBook.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -360,9 +357,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCSwiftPackageProductDependency section */
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DE80E34E2EFEB0D800B24701 /* Project object */;
 }

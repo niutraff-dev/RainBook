@@ -1,6 +1,6 @@
 import Foundation
 
-struct CriciumaBefairNotificationMessagesProvider: NotificationMessagesProviding {
+struct RainBookNotificationMessagesProvider: NotificationMessagesProviding {
     var messages: [NotificationMessage] {
         NotificationMessageKeys.all.map { keys in
             NotificationMessage(
@@ -22,7 +22,7 @@ final class NotificationsService {
 
     private let controller: LocalNotificationsControlling
 
-    init(controller: LocalNotificationsControlling = DefaultLocalNotificationsController(messagesProvider: CriciumaBefairNotificationMessagesProvider())) {
+    init(controller: LocalNotificationsControlling = DefaultLocalNotificationsController(messagesProvider: RainBookNotificationMessagesProvider())) {
         self.controller = controller
     }
 

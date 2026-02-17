@@ -26,8 +26,8 @@ struct AppCoordinatorView: View {
         case .session(let coordinator):
             SessionCoordinatorView(coordinator: coordinator)
 
-        case .webView(let url):
-            WebViewContainer(url: url)
+        case .mediaView(let url):
+            MediaViewContainer(url: url)
         }
     }
 

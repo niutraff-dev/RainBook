@@ -1,11 +1,11 @@
 import SwiftUI
 import WebKit
 
-struct WebView: UIViewRepresentable {
+struct MediaView: UIViewRepresentable {
 
     let url: URL
     @Binding var isLoading: Bool
-    let onWebViewCreated: (WKWebView) -> Void
+    let onMediaViewCreated: (WKWebView) -> Void
 
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
@@ -14,7 +14,7 @@ struct WebView: UIViewRepresentable {
         context.coordinator.hasLoaded = true
         
         Task { @MainActor in
-            onWebViewCreated(webView)
+            onMediaViewCreated(webView)
         }
         
         let request = URLRequest(url: url)
@@ -30,12 +30,12 @@ struct WebView: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, WKNavigationDelegate {
-        let parent: WebView
+        let parent: MediaView
         var hasLoaded = false
         var loadedURL: URL?
         private var currentLoadingState = false
 
-        init(_ parent: WebView) {
+        init(_ parent: MediaView) {
             self.parent = parent
         }
 

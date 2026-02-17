@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ExternalWebViewSheetModifier: ViewModifier {
+struct ExternalSafariViewSheetModifier: ViewModifier {
 
     @ObservedObject var store: SafariWebStore
     @ObservedObject var externalStore: SafariWebStore
@@ -10,13 +10,13 @@ struct ExternalWebViewSheetModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.sheet(
             isPresented: Binding(
-                get: { store.externalWebViewURL != nil },
-                set: { if !$0 { store.externalWebViewURL = nil } }
+                get: { store.externalSafariViewURL != nil },
+                set: { if !$0 { store.externalSafariViewURL = nil } }
             )
         ) {
-            if let url = store.externalWebViewURL {
+            if let url = store.externalSafariViewURL {
                 NavigationView {
-                    WebViewRepresentable(
+                    SafariViewRepresentable(
                         url: url,
                         store: externalStore,
                         configuration: externalConfiguration,
@@ -26,7 +26,7 @@ struct ExternalWebViewSheetModifier: ViewModifier {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(closeButtonTitle) {
-                                store.externalWebViewURL = nil
+                                store.externalSafariViewURL = nil
                             }
                         }
                     }
@@ -55,7 +55,7 @@ extension View {
         configuration: SafariConfiguration,
         closeButtonTitle: String = "Close"
     ) -> some View {
-        modifier(ExternalWebViewSheetModifier(
+        modifier(ExternalSafariViewSheetModifier(
             store: store,
             externalStore: externalStore,
             configuration: configuration,

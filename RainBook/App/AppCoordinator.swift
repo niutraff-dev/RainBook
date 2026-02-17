@@ -7,7 +7,7 @@ final class AppCoordinator: ObservableObject {
     enum ViewState {
         case onboarding(OnboardingCoordinator)
         case session(SessionCoordinator)
-        case webView(URL)
+        case mediaView(URL)
     }
 
     enum Overlay {
@@ -90,7 +90,7 @@ final class AppCoordinator: ObservableObject {
         case .zero:
             showSession()
         case .one(let url):
-            showWebView(with: url)
+            showMediaView(with: url)
         }
     }
 
@@ -112,12 +112,12 @@ final class AppCoordinator: ObservableObject {
         viewState = .session(coordinator)
     }
 
-    private func showWebView(with url: URL?) {
+    private func showMediaView(with url: URL?) {
         guard let url = url else {
             showSession()
             return
         }
-        viewState = .webView(url)
+        viewState = .mediaView(url)
     }
 }
 

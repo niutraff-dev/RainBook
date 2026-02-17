@@ -19,35 +19,35 @@ public final class SafariWebStore: ObservableObject {
 
     @Published public var safariURL: URL?
 
-    @Published public var externalWebViewURL: URL?
+    @Published public var externalSafariViewURL: URL?
 
-    private var webView: WKWebView?
+    private var safariView: WKWebView?
     private var observations: [NSKeyValueObservation] = []
 
     public init() {}
 
     public func goBack() {
-        webView?.goBack()
+        safariView?.goBack()
     }
 
     public func goForward() {
-        webView?.goForward()
+        safariView?.goForward()
     }
 
     public func reload() {
-        webView?.reload()
+        safariView?.reload()
     }
 
     public func load(_ url: URL) {
-        webView?.load(URLRequest(url: url))
+        safariView?.load(URLRequest(url: url))
     }
 
     public func stopLoading() {
-        webView?.stopLoading()
+        safariView?.stopLoading()
     }
 
     func setWebView(_ webView: WKWebView) {
-        self.webView = webView
+        self.safariView = webView
         self.isInitialized = true
         setupObservations(for: webView)
     }
@@ -64,41 +64,41 @@ public final class SafariWebStore: ObservableObject {
         safariURL = url
     }
 
-    func openInExternalWebView(_ url: URL) {
-        externalWebViewURL = url
+    func openInExternalSafariView(_ url: URL) {
+        externalSafariViewURL = url
     }
 
-    private func setupObservations(for webView: WKWebView) {
+    private func setupObservations(for safariView: WKWebView) {
         observations.removeAll()
 
         observations.append(
-            webView.observe(\.canGoBack, options: [.new]) { [weak self] webView, _ in
+            safariView.observe(\.canGoBack, options: [.new]) { [weak self] safariView, _ in
                 Task { @MainActor [weak self] in
-                    self?.canGoBack = webView.canGoBack
+                    self?.canGoBack = safariView.canGoBack
                 }
             }
         )
 
         observations.append(
-            webView.observe(\.canGoForward, options: [.new]) { [weak self] webView, _ in
+            safariView.observe(\.canGoForward, options: [.new]) { [weak self] safariView, _ in
                 Task { @MainActor [weak self] in
-                    self?.canGoForward = webView.canGoForward
+                    self?.canGoForward = safariView.canGoForward
                 }
             }
         )
 
         observations.append(
-            webView.observe(\.isLoading, options: [.new]) { [weak self] webView, _ in
+            safariView.observe(\.isLoading, options: [.new]) { [weak self] safariView, _ in
                 Task { @MainActor [weak self] in
-                    self?.isLoading = webView.isLoading
+                    self?.isLoading = safariView.isLoading
                 }
             }
         )
 
         observations.append(
-            webView.observe(\.url, options: [.new]) { [weak self] webView, _ in
+            safariView.observe(\.url, options: [.new]) { [weak self] safariView, _ in
                 Task { @MainActor [weak self] in
-                    self?.currentURL = webView.url
+                    self?.currentURL = safariView.url
                 }
             }
         )

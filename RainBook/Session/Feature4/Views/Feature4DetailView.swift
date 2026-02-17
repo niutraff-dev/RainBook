@@ -8,7 +8,7 @@ struct Feature4DetailView: View {
         VStack(spacing: 0) {
             headarView()
             
-            SafariWebView(url: url, configuration: .minimal)
+            SafariView(url: url, configuration: .minimal)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.palette(.backColor))

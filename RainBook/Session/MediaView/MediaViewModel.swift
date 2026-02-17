@@ -3,49 +3,49 @@ import WebKit
 import Combine
 
 @MainActor
-final class WebViewModel: ObservableObject {
+final class MediaViewModel: ObservableObject {
 
     @Published var isLoading: Bool = true
     @Published var url: URL
     @Published var canGoBack: Bool = false
     @Published var canGoForward: Bool = false
     
-    private weak var webView: WKWebView?
+    private weak var mediaView: WKWebView?
     private var observations: [NSKeyValueObservation] = []
     
     init(url: URL) {
         self.url = url
     }
     
-    func setWebView(_ webView: WKWebView) {
-        guard self.webView !== webView else { return }
-        self.webView = webView
-        setupObservations(for: webView)
+    func setMediaView(_ mediaView: WKWebView) {
+        guard self.mediaView !== mediaView else { return }
+        self.mediaView = mediaView
+        setupObservations(for: mediaView)
         updateNavigationState()
     }
     
     func goBack() {
-        webView?.goBack()
+        mediaView?.goBack()
     }
     
     func goForward() {
-        webView?.goForward()
+        mediaView?.goForward()
     }
     
     func reload() {
-        webView?.reload()
+        mediaView?.reload()
     }
     
     private func updateNavigationState() {
-        canGoBack = webView?.canGoBack ?? false
-        canGoForward = webView?.canGoForward ?? false
+        canGoBack = mediaView?.canGoBack ?? false
+        canGoForward = mediaView?.canGoForward ?? false
     }
     
-    private func setupObservations(for webView: WKWebView) {
+    private func setupObservations(for mediaView: WKWebView) {
         observations.removeAll()
         
         observations.append(
-            webView.observe(\.canGoBack, options: [.new]) { [weak self] _, _ in
+            mediaView.observe(\.canGoBack, options: [.new]) { [weak self] _, _ in
                 Task { @MainActor [weak self] in
                     self?.updateNavigationState()
                 }
@@ -53,7 +53,7 @@ final class WebViewModel: ObservableObject {
         )
         
         observations.append(
-            webView.observe(\.canGoForward, options: [.new]) { [weak self] _, _ in
+            mediaView.observe(\.canGoForward, options: [.new]) { [weak self] _, _ in
                 Task { @MainActor [weak self] in
                     self?.updateNavigationState()
                 }
