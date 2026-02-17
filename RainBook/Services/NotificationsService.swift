@@ -1,5 +1,4 @@
 import Foundation
-import Notifications
 
 struct CriciumaBefairNotificationMessagesProvider: NotificationMessagesProviding {
     var messages: [NotificationMessage] {

@@ -1,5 +1,4 @@
 import Foundation
-import Network
 
 enum NetworkAppConfiguration {
 
@@ -25,12 +24,12 @@ enum NetworkAppConfiguration {
 enum NetworkServiceFactory {
 
     @MainActor
-    static func makeAppStatusService() -> Network.AppStatusServiceProtocol {
+    static func makeAppStatusService() -> AppStatusServiceProtocol {
         NetworkFactory.makeAppStatusService(configuration: NetworkAppConfiguration.configuration)
     }
 
     @MainActor
-    static func makeAnalyticsRepository() -> Network.AnalyticsRepositoryProtocol {
+    static func makeAnalyticsRepository() -> AnalyticsRepositoryProtocol {
         NetworkFactory.makeAnalyticsRepository(configuration: NetworkAppConfiguration.configuration)
     }
 }

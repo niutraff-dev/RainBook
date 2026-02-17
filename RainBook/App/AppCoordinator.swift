@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-import Network
 
 @MainActor
 final class AppCoordinator: ObservableObject {
@@ -18,18 +17,18 @@ final class AppCoordinator: ObservableObject {
     @Published private(set) var viewState: ViewState?
     @Published var overlay: Overlay?
 
-    private let appStatusService: Network.AppStatusServiceProtocol
-    private let analyticsRepository: Network.AnalyticsRepositoryProtocol
+    private let appStatusService: AppStatusServiceProtocol
+    private let analyticsRepository: AnalyticsRepositoryProtocol
     private let notificationsService: NotificationsService
-    private var status: Network.AppStatus?
+    private var status: AppStatus?
     private var statisticsUrl: URL?
 
     @KeyValue(\.onboardingCompleted)
     private var isOnboardingShown: Bool
 
     init(
-        appStatusService: Network.AppStatusServiceProtocol,
-        analyticsRepository: Network.AnalyticsRepositoryProtocol,
+        appStatusService: AppStatusServiceProtocol,
+        analyticsRepository: AnalyticsRepositoryProtocol,
         notificationsService: NotificationsService
     ) {
         self.appStatusService = appStatusService
@@ -56,7 +55,7 @@ final class AppCoordinator: ObservableObject {
         handleStatus(result.status)
     }
 
-    private func handleStatus(_ status: Network.AppStatus) {
+    private func handleStatus(_ status: AppStatus) {
         overlay = nil
         self.status = status
         handleNotifications(for: status)
@@ -68,7 +67,7 @@ final class AppCoordinator: ObservableObject {
         }
     }
 
-    private func handleNotifications(for status: Network.AppStatus) {
+    private func handleNotifications(for status: AppStatus) {
         Task {
             switch status {
             case .zero:

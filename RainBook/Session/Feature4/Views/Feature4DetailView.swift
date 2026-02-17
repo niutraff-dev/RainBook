@@ -1,5 +1,4 @@
 import SwiftUI
-import Safari
 
 struct Feature4DetailView: View {
     let url: URL

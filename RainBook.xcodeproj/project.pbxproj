@@ -7,16 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1B2C3D4E5F60718293A4B5C /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = D1E2F3A4B5C60718293A4B5C /* Network */; };
-		AA11BB22CC33DD44EE55FF66 /* Notifications in Frameworks */ = {isa = PBXBuildFile; productRef = BB22CC33DD44EE55FF66AA77 /* Notifications */; };
-		E1F2A3B4C5D60718293A4B5C /* Safari in Frameworks */ = {isa = PBXBuildFile; productRef = F1E2D3C4B5A60718293A4B5C /* Safari */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C1D2E3F4A5B60718293A4B5C /* Network */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Network; sourceTree = "<group>"; };
-		CC33DD44EE55FF66AA77BB88 /* Notifications */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Notifications; sourceTree = "<group>"; };
 		DE80E3562EFEB0D800B24701 /* RainBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RainBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E1D2C3B4A5B60718293A4B5C /* Safari */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Safari; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,9 +39,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA11BB22CC33DD44EE55FF66 /* Notifications in Frameworks */,
-				A1B2C3D4E5F60718293A4B5C /* Network in Frameworks */,
-				E1F2A3B4C5D60718293A4B5C /* Safari in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,9 +48,6 @@
 		DE80E34D2EFEB0D800B24701 = {
 			isa = PBXGroup;
 			children = (
-				C1D2E3F4A5B60718293A4B5C /* Network */,
-				CC33DD44EE55FF66AA77BB88 /* Notifications */,
-				E1D2C3B4A5B60718293A4B5C /* Safari */,
 				DE80E3582EFEB0D800B24701 /* RainBook */,
 				DE80E3572EFEB0D800B24701 /* Products */,
 			);
@@ -93,9 +81,6 @@
 			);
 			name = RainBook;
 			packageProductDependencies = (
-				BB22CC33DD44EE55FF66AA77 /* Notifications */,
-				D1E2F3A4B5C60718293A4B5C /* Network */,
-				F1E2D3C4B5A60718293A4B5C /* Safari */,
 			);
 			productName = CriciumaBefair;
 			productReference = DE80E3562EFEB0D800B24701 /* RainBook.app */;
@@ -377,18 +362,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		BB22CC33DD44EE55FF66AA77 /* Notifications */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Notifications;
-		};
-		D1E2F3A4B5C60718293A4B5C /* Network */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Network;
-		};
-		F1E2D3C4B5A60718293A4B5C /* Safari */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Safari;
-		};
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DE80E34E2EFEB0D800B24701 /* Project object */;
