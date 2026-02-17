@@ -1,0 +1,78 @@
+// MARK: - Common
+"common.ok" = "OK";
+"common.cancel" = "Cancel";
+"common.done" = "Done";
+"common.save" = "Save";
+"common.delete" = "Delete";
+"common.edit" = "Edit";
+"common.close" = "Close";
+"common.back" = "Back";
+"common.next" = "Next";
+"common.continue" = "Continue";
+"common.retry" = "Retry";
+"common.loading" = "Loading...";
+"common.error" = "Error";
+"common.success" = "Success";
+"common.complete" = "Complete";
+
+// MARK: - Onboarding
+"onboarding.step1.title" = "Welcome!";
+"onboarding.step1.description" = "Record the weather manually: sky conditions, precipitation, and other details.";
+"onboarding.step2.title" = "A visual history";
+"onboarding.step2.description" = "View past recordings and keep track of weather changes using accurate charts.";
+"onboarding.getStarted" = "Start";
+"onboarding.skip" = "Next";
+
+// MARK: - Tabs
+"tab.feature1" = "Calendar";
+"tab.feature2" = "History";
+"tab.feature3" = "Chart";
+"tab.feature4" = "Settings";
+
+// MARK: - Feature 1
+"feature1.title" = "Home";
+"feature1.empty" = "No items yet";
+"feature1.detail.title" = "Details";
+"feature1.detail.content" = "This is the detail screen content.";
+
+// MARK: - Feature 2
+"feature2.title" = "Search";
+"feature2.placeholder" = "Search...";
+"feature2.noResults" = "No results found";
+"feature2.detail.title" = "Details";
+"feature2.detail.content" = "This is the Feature 2 detail screen content.";
+
+// MARK: - Feature 3
+"feature3.title" = "Profile";
+"feature3.settings" = "Settings";
+"feature3.logout" = "Log Out";
+"feature3.detail.title" = "Details";
+"feature3.detail.content" = "This is the Feature 3 detail screen content.";
+
+// MARK: - Settings
+"settings.title" = "Settings";
+"settings.privacyPolicy" = "Privacy Policy";
+"settings.termsOfUse" = "Terms of use";
+"settings.rate" = "Rate us";
+
+// MARK: - Notifications
+"notification.message1.title" = "Daily Reminder";
+"notification.message1.body" = "Don't forget to check your tasks today!";
+"notification.message2.title" = "Stay on Track";
+"notification.message2.body" = "You're doing great! Keep up the momentum.";
+"notification.message3.title" = "Time for a Break";
+"notification.message3.body" = "Take a moment to refresh and recharge.";
+"notification.message4.title" = "Progress Update";
+"notification.message4.body" = "Check your progress and celebrate your wins!";
+"notification.message5.title" = "Keep Going";
+"notification.message5.body" = "Every step forward counts. You've got this!";
+"notification.message6.title" = "Daily Check-In";
+"notification.message6.body" = "How's your day going? Take a moment to reflect.";
+"notification.message7.title" = "Motivation Boost";
+"notification.message7.body" = "Remember why you started. You're making progress!";
+"notification.message8.title" = "Quick Reminder";
+"notification.message8.body" = "Don't forget to complete your daily goals.";
+"notification.message9.title" = "You're Awesome";
+"notification.message9.body" = "Keep up the excellent work!";
+"notification.message10.title" = "Evening Check";
+"notification.message10.body" = "Reflect on your day and plan for tomorrow.";
