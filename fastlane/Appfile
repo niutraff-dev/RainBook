@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+app_identifier("app.rainbookrainfallrecords.com")
+apple_id("dejan.lab@zivotjelepmd.pro")
+team_id("YA8HDBSS4T")

@@ -1,0 +1,90 @@
+# frozen_string_literal: true
+
+default_platform(:ios)
+
+# ---------- Helpers ----------
+def scheme_name
+  (ENV["SCHEME"].to_s.strip.empty? ? "RainBook" : ENV["SCHEME"].to_s.strip)
+end
+
+def team_id
+  (ENV["TEAM_ID"].to_s.strip.empty? ? "YA8HDBSS4T" : ENV["TEAM_ID"].to_s.strip)
+end
+
+def bundle_id
+  (ENV["BUNDLE_ID"].to_s.strip.empty? ? "app.rainbookrainfallrecords.com" : ENV["BUNDLE_ID"].to_s.strip)
+end
+
+def asc_api_key
+  key_id = ENV["APP_STORE_CONNECT_KEY_ID"].to_s.strip
+  issuer = ENV["APP_STORE_CONNECT_ISSUER_ID"].to_s.strip
+  key_content = ENV["APP_STORE_CONNECT_API_KEY"].to_s
+  key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"].to_s.strip
+
+  UI.user_error!("Missing APP_STORE_CONNECT_KEY_ID") if key_id.empty?
+  UI.user_error!("Missing APP_STORE_CONNECT_ISSUER_ID") if issuer.empty?
+
+  if key_content.strip.empty? && key_path.empty?
+    UI.user_error!("Provide APP_STORE_CONNECT_API_KEY (content) OR APP_STORE_CONNECT_API_KEY_PATH (path to .p8)")
+  end
+
+  options = { key_id: key_id, issuer_id: issuer }
+  options[:key_content] = key_content unless key_content.strip.empty?
+  options[:key_filepath] = key_path if key_content.strip.empty? && !key_path.empty?
+
+  app_store_connect_api_key(**options)
+end
+
+# ---------- Lanes ----------
+platform :ios do
+  desc "Diagnostics: list schemes/targets"
+  lane :doctor do
+    sh("xcodebuild -list -project 'RainBook.xcodeproj'")
+    UI.message("SCHEME=#{scheme_name}")
+    UI.message("TEAM_ID=#{team_id}")
+    UI.message("BUNDLE_ID=#{bundle_id}")
+  end
+
+  desc "Build IPA for App Store"
+  lane :build do
+    unless ENV["SKIP_BUILD_NUMBER_INCREMENT"].to_s == "1"
+      increment_build_number(xcodeproj: "RainBook.xcodeproj")
+    end
+
+    profile_name = ENV["APPSTORE_PROFILE_NAME"].to_s.strip
+
+    export_opts = profile_name.empty? ?
+      { signingStyle: "automatic", teamID: team_id, method: "app-store" } :
+      { signingStyle: "manual", teamID: team_id, method: "app-store",
+        provisioningProfiles: { bundle_id => profile_name } }
+
+    xcargs_str = profile_name.empty? ? "" :
+      "CODE_SIGN_STYLE=Manual " \
+      "DEVELOPMENT_TEAM=#{team_id} " \
+      "PROVISIONING_PROFILE_SPECIFIER='#{profile_name}' " \
+      "CODE_SIGN_IDENTITY='iPhone Distribution'"
+
+    build_app(
+      scheme: scheme_name,
+      project: "RainBook.xcodeproj",
+      clean: true,
+      export_method: "app-store",
+      export_options: export_opts,
+      output_directory: "build",
+      output_name: "RainBook",
+      silent: false,
+      xcargs: xcargs_str
+    )
+  end
+
+  desc "Build + upload to TestFlight"
+  lane :beta do
+    asc_api_key
+    build
+    upload_to_testflight(
+      api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+      ipa: "build/RainBook.ipa",
+      skip_waiting_for_build_processing: true
+    )
+  end
+end

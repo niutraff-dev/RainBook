@@ -1,0 +1,200 @@
+name: Release to TestFlight (on tag)
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  testflight:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    env:
+      PROJECT: "RainBook.xcodeproj"
+      SCHEME: "RainBook"
+      CI: "1"
+      SKIP_BUILD_NUMBER_INCREMENT: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+
+      - name: Install Bundler version from Gemfile.lock + print diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "=== System ==="
+          uname -m
+          sw_vers || true
+
+          echo "=== Ruby ==="
+          ruby -v
+          which ruby
+
+          echo "=== Gemfile.lock ==="
+          if [ ! -f Gemfile.lock ]; then
+            echo "Gemfile.lock not found — generating with bundle install..."
+            gem install bundler --no-document
+            bundle config set path vendor/bundle
+            bundle install --jobs 4 --retry 3
+          fi
+
+          BUNDLER_VERSION="$(ruby -e 'lock=File.read("Gemfile.lock"); puts(lock.split("BUNDLED WITH").last.strip.split("\n").first.strip)')"
+          echo "Gemfile.lock BUNDLER_VERSION=$BUNDLER_VERSION"
+
+          echo "=== Install bundler ==="
+          gem install bundler -v "$BUNDLER_VERSION" --no-document
+
+          echo "=== Bundler ==="
+          bundle _${BUNDLER_VERSION}_ -v
+          which bundle || true
+
+          echo "=== Local RubyGems platform ==="
+          ruby -e 'require "rubygems"; puts Gem::Platform.local.to_s'
+
+      - name: Ensure Gemfile.lock supports runner platform (fix exit code 16)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUNDLER_VERSION="$(ruby -e 'lock=File.read("Gemfile.lock"); puts(lock.split("BUNDLED WITH").last.strip.split("\n").first.strip)')"
+          LOCAL_PLATFORM="$(ruby -e 'require "rubygems"; puts Gem::Platform.local.to_s')"
+
+          echo "Adding platforms to lockfile (if missing): $LOCAL_PLATFORM and ruby"
+          bundle _${BUNDLER_VERSION}_ lock --add-platform "$LOCAL_PLATFORM" || true
+          bundle _${BUNDLER_VERSION}_ lock --add-platform ruby || true
+
+          echo "Current PLATFORMS in Gemfile.lock:"
+          ruby -e '
+            lock=File.read("Gemfile.lock").lines
+            i=lock.index{|l| l.strip=="PLATFORMS"}
+            if i
+              j=i+1
+              while j < lock.size && lock[j] =~ /^\s{2}\S/
+                puts lock[j].strip
+                j += 1
+              end
+            else
+              puts "(no PLATFORMS section?)"
+            end
+          '
+
+          echo "Lockfile diff (not committed, just for CI):"
+          git diff -- Gemfile.lock || true
+
+      - name: Cache gems (vendor/bundle)
+        uses: actions/cache@v4
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-ruby-gems-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-ruby-
+
+      - name: Bundle install (verbose)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUNDLER_VERSION="$(ruby -e 'lock=File.read("Gemfile.lock"); puts(lock.split("BUNDLED WITH").last.strip.split("\n").first.strip)')"
+
+          bundle _${BUNDLER_VERSION}_ config set path vendor/bundle
+          bundle _${BUNDLER_VERSION}_ install --jobs 4 --retry 3 --verbose
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Create temporary keychain & import certificate
+        shell: bash
+        env:
+          P12_BASE64: ${{ secrets.IOS_DIST_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          KEYCHAIN_PASSWORD="temp_keychain_password"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+
+          echo "$P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "=== Verifying imported certificates ==="
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          echo "Keychain and certificate imported."
+
+      - name: Install provisioning profile (App Store)
+        shell: bash
+        env:
+          PROFILE_BASE64: ${{ secrets.IOS_APPSTORE_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          PROFILE_PATH="$RUNNER_TEMP/profile.mobileprovision"
+          echo "$PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
+
+          UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin <<< "$(security cms -D -i "$PROFILE_PATH")")
+          NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< "$(security cms -D -i "$PROFILE_PATH")")
+
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
+
+          echo "Installed provisioning profile UUID: $UUID"
+          echo "Provisioning profile NAME: $NAME"
+          echo "APPSTORE_PROFILE_NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: Build & Upload to TestFlight
+        shell: bash
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          set -euo pipefail
+          BUNDLER_VERSION="$(ruby -e 'lock=File.read("Gemfile.lock"); puts(lock.split("BUNDLED WITH").last.strip.split("\n").first.strip)')"
+
+          bundle _${BUNDLER_VERSION}_ exec fastlane ios beta --verbose
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RainBook.ipa
+          path: build/RainBook.ipa
+          retention-days: 14
+
+      - name: Notify Telegram on Success
+        if: success()
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
+        run: |
+          VERSION=$(grep -m1 'MARKETING_VERSION' RainBook.xcodeproj/project.pbxproj | sed 's/.*= *\(.*\);/\1/' | tr -d ' ')
+          BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION' RainBook.xcodeproj/project.pbxproj | sed 's/.*= *\(.*\);/\1/' | tr -d ' ')
+
+          MESSAGE="✅ *RainBook* uploaded to TestFlight 🚀 Version ${VERSION} build ${BUILD}"
+
+          THREAD_PARAM=""
+          if [ -n "$TELEGRAM_THREAD_ID" ]; then
+            THREAD_PARAM="-d message_thread_id=${TELEGRAM_THREAD_ID}"
+          fi
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=${MESSAGE}" \
+            -d "parse_mode=Markdown" \
+            $THREAD_PARAM
